@@ -498,7 +498,7 @@
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>=Fields!Calories.Value</Value>
+                              <Value>=Fields!Calories.Value &amp; " / 100g"</Value>
                               <Style>
                                 <FontFamily>Verdana</FontFamily>
                                 <FontSize>9pt</FontSize>
