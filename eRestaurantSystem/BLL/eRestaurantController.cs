@@ -16,7 +16,7 @@ namespace eRestaurantSystem.BLL
     [DataObject]
     public class eRestaurantController
     {
-    #region SpecialEvents
+        #region SpecialEvents
         [DataObjectMethod(DataObjectMethodType.Select,false)]
         public List<SpecialEvent> SpecialEvent_List()
         {
@@ -76,9 +76,9 @@ namespace eRestaurantSystem.BLL
                 context.SaveChanges();
             }
         }
-    #endregion
+        #endregion
 
-    #region Reservations
+        #region Reservations
         [DataObjectMethod(DataObjectMethodType.Select, false)]
         public List<Reservation> Reservation_List()
         {
@@ -97,74 +97,74 @@ namespace eRestaurantSystem.BLL
                 return context.Reservations.Where(anItem => anItem.Eventcode == eventcode).ToList();
             }
         }
-    #endregion
+        #endregion
 
-    #region Waiter
-    [DataObjectMethod(DataObjectMethodType.Select, false)]
-    public List<Waiter> Waiter_List()
-    {
-        //interfacing with our Context class
-        using (eRestaurantContext context = new eRestaurantContext())
+        #region Waiter
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<Waiter> Waiter_List()
         {
-            // using Context DbSet to get entity data
-            //return context.SpecialEvents.ToList();
+            //interfacing with our Context class
+            using (eRestaurantContext context = new eRestaurantContext())
+            {
+                // using Context DbSet to get entity data
+                //return context.SpecialEvents.ToList();
 
-            //get a list of instances for entity using LINQ
-            var results = from item in context.Waiters
-                            orderby item.LastName, item.FirstName
-                            select item;
-            return results.ToList();
+                //get a list of instances for entity using LINQ
+                var results = from item in context.Waiters
+                                orderby item.LastName, item.FirstName
+                                select item;
+                return results.ToList();
 
+            }
         }
-    }
-    [DataObjectMethod(DataObjectMethodType.Select, false)]
-    public Waiter GetWaiter(int waiterid)
-    {
-        using (eRestaurantContext context = new eRestaurantContext())
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public Waiter GetWaiter(int waiterid)
         {
-            return context.Waiters.Find(waiterid);
+            using (eRestaurantContext context = new eRestaurantContext())
+            {
+                return context.Waiters.Find(waiterid);
+            }
         }
-    }
 
-    [DataObjectMethod(DataObjectMethodType.Insert, false)]
-    public void Waiter_Add(Waiter item)
-    {
-        using (eRestaurantContext context = new eRestaurantContext())
+        [DataObjectMethod(DataObjectMethodType.Insert, false)]
+        public void Waiter_Add(Waiter item)
         {
-            Waiter added = null;
-            added = context.Waiters.Add(item);
-            // commits the add to the database
-            // evaluates the annotations (validations) on your entity
-            // [Required],[StringLength],[Range],...
-            context.SaveChanges();
+            using (eRestaurantContext context = new eRestaurantContext())
+            {
+                Waiter added = null;
+                added = context.Waiters.Add(item);
+                // commits the add to the database
+                // evaluates the annotations (validations) on your entity
+                // [Required],[StringLength],[Range],...
+                context.SaveChanges();
+            }
         }
-    }
 
-    [DataObjectMethod(DataObjectMethodType.Update, false)]
-    public void Waiter_Update(Waiter item)
-    {
-        using (eRestaurantContext context = new eRestaurantContext())
+        [DataObjectMethod(DataObjectMethodType.Update, false)]
+        public void Waiter_Update(Waiter item)
         {
-            context.Entry<Waiter>(context.Waiters.Attach(item)).State = System.Data.Entity.EntityState.Modified;
-            context.SaveChanges();
+            using (eRestaurantContext context = new eRestaurantContext())
+            {
+                context.Entry<Waiter>(context.Waiters.Attach(item)).State = System.Data.Entity.EntityState.Modified;
+                context.SaveChanges();
+            }
         }
-    }
 
-    [DataObjectMethod(DataObjectMethodType.Delete, false)]
-    public void Waiter_Delete(Waiter item)
-    {
-        using (eRestaurantContext context = new eRestaurantContext())
+        [DataObjectMethod(DataObjectMethodType.Delete, false)]
+        public void Waiter_Delete(Waiter item)
         {
-            Waiter existing = context.Waiters.Find(item.WaiterID);
-            context.Waiters.Remove(existing);
-            context.SaveChanges();
+            using (eRestaurantContext context = new eRestaurantContext())
+            {
+                Waiter existing = context.Waiters.Find(item.WaiterID);
+                context.Waiters.Remove(existing);
+                context.SaveChanges();
+            }
         }
-    }
-    #endregion
+        #endregion
 
-    #region Linq Queries
+        #region Linq Queries
         [DataObjectMethod(DataObjectMethodType.Select,false)]
-    public List<DTOs.CategoryMenuItems> GetCategoryMenuItems()
+        public List<DTOs.CategoryMenuItems> GetCategoryMenuItems()
         {
             using(eRestaurantContext context = new eRestaurantContext())
             {
@@ -188,6 +188,30 @@ namespace eRestaurantSystem.BLL
             }
         }
     
-    #endregion
+        #endregion
+
+        #region Reports
+
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<POCOs.CategoryMenuItems> GetReportCategoryMenuItems()
+        {
+            using (eRestaurantContext context = new eRestaurantContext())
+            {
+                var results = from data in context.Items
+                              orderby data.MenuCategory.Description, data.Description
+                              select new POCOs.CategoryMenuItems
+                              {
+                                  CategoryDescription = data.MenuCategory.Description,
+                                  ItemDescription = data.Description,
+                                  Price = data.CurrentPrice,
+                                  Calories = data.Calories,
+                                  Comment = data.Comment
+                              };
+
+                return results.ToList(); // this was .Dump() in Linqpad
+            }
+        }
+
+        #endregion
     }
 }
