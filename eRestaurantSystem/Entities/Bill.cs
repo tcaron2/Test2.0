@@ -13,7 +13,9 @@ namespace eRestaurantSystem.Entities
         public int BillID { get; set; }
         [Required(ErrorMessage = "Bill Date is required.")]
         public DateTime BillDate { get; set; }
-        public DateTime OrderPlaced { get; set; }
+        public TimeSpan OrderPlaced { get; set; }
+        public TimeSpan OrderReady { get; set; }
+        public TimeSpan OrderPaid { get; set; }
         [Required(ErrorMessage = "Number in party is required.")]
         public int NumberInParty { get; set; }
         public bool PaidStatus { get; set; }
@@ -21,8 +23,7 @@ namespace eRestaurantSystem.Entities
         public int WaiterID { get; set; }
         public int? TableID { get; set; }
         public int? ReservationID { get; set; }
-        public bool OrderReady { get; set; }
-        [StringLength(50,ErrorMessage="Comment has a max size of 50 characters")]
+        [StringLength(50, ErrorMessage = "Comment has a max size of 50 characters")]
         public string Comment { get; set; }
 
         //navigation
