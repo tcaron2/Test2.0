@@ -97,6 +97,43 @@ namespace eRestaurantSystem.BLL
                 return context.Reservations.Where(anItem => anItem.Eventcode == eventcode).ToList();
             }
         }
+        [DataObjectMethod(DataObjectMethodType.Select, false)]
+        public List<DTOs.ReservationCollection> ReservationsByTime(DateTime date)
+        {
+            using (eRestaurantContext context = new eRestaurantContext())
+            {
+                var results = from data in context.Reservations
+                              where data.ReservationDate.Year == date.Year
+                                 && data.ReservationDate.Month == date.Month
+                                 && data.ReservationDate.Day == date.Day
+                                 && data.ReservationStatus == "B"
+                              select new POCOs.ReservationSummary
+                              {
+                                  ID = data.ReservationID,
+                                  Name = data.CustomerName,
+                                  Date = data.ReservationDate,
+                                  Status = data.ReservationStatus,
+                                  Event = data.SpecialEvent.Description,
+                                  NumberinParty = data.NumberinParty,
+                                  Contact = data.ContactPhone
+                              };
+                //example of using group
+                //when you are developing your queries in Linqpad you are working with Linq to SQL
+                //when ou are using the queries in the controller you are working with Linq to Entities
+                //TimeofDay is OK for Linq to SQL
+                //We will use the DateTime Hour property in our controller
+                //Hour is an integer
+                var finalResults = from item in results
+                                   orderby item.NumberinParty
+                                   group item by item.Date.Hour into itemGroup
+                                   select new DTOs.ReservationCollection
+                                   {
+                                       Hour = itemGroup.Key,
+                                       Reservations = itemGroup.ToList()
+                                   };
+                return finalResults.ToList();
+            }
+        }
         #endregion
 
         #region Waiter
